@@ -1,7 +1,9 @@
-let confing = {
+let config = {
   host: 'localhost',
-  user: 'root',
-  password: '123456',
-  database: 'koa-sql',
-  port: '3306'
+  user: 'www',
+  password: 'www',
+  database: 'test',
+  port: 3306
 }
+
+module.exports = config
