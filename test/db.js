@@ -27,11 +27,24 @@ var Koasql = sequelize.define('koasql', {
     allowNull: false,
     defaultValue: false 
   },
+  salary: {
+    type: Sequelize.FLOAT(4,2),
+    allowNull: false,
+    defaultValue: 12.23
+  },
+  bouns: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    defaultValue: 60
+  },
   age: {
     type: Sequelize.STRING(12),
     allowNull: false,
     defaultValue: "18"
   }
 })
-// Koasql.sync()
+Koasql.sync({
+  // force: true, // 这个是 添加之前是否要 删除这个表重新建一个
+  alter: true, // 这个是添加或者删除字段 都会自动添加
+})
 module.exports = Koasql;

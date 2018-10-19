@@ -4,7 +4,9 @@ const body = require("koa-bodyparser")
 const json = require("koa-json")
 const mysql = require("mysql")
 
-const modelUser = require("./method-modle")
+// const modelUser = require("./method-modle")
+const modelUser = require("./method-modle.1.js")
+// console.log(modelUser)
 
 
 const app = new Koa()
@@ -29,11 +31,20 @@ page.get("/api/:id", async(ctx, next) => {
   let id = ctx.params.id
   console.log(ctx.query)
   let aa = await modelUser.getKoasqlById(id)
-  ctx.response.body = {
-    code: 1,
-    msg: 'ok',
-    data: aa
+  if(aa) {
+    ctx.response.body = {
+      code: 1,
+      msg: 'ok',
+      data: aa
+    }
+  }else {
+    ctx.response.body = {
+      code: 1,
+      msg: 'ok',
+      data: "不存在这个数据"
+    }
   }
+  
 })
 
 // 删
