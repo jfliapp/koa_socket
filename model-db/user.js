@@ -1,4 +1,4 @@
-const user = require("../db/user")
+const user = require("../db/index").User
 // 添加数据
 exports.createKoasql = async(data) => {
   if(data) {

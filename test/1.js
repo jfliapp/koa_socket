@@ -4,8 +4,8 @@ const body = require("koa-bodyparser")
 const json = require("koa-json")
 const mysql = require("mysql")
 
-// const modelUser = require("./method-modle")
-const modelUser = require("./method-modle.1.js")
+const modelUser = require("./method-modle")
+// const modelUser = require("./method-modle.1.js")
 // console.log(modelUser)
 
 
@@ -90,7 +90,7 @@ page.post("/form", async(ctx, next) => {
     }
   } catch (e) {
     console.log(e)
-  }  
+  }
 })
 
 // 装载所有子路由
