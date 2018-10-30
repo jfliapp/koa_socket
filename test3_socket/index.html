@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>index</title>
+    <script src="https://cdn.bootcss.com/socket.io/2.0.4/socket.io.slim.js"></script>
+  </head>
+
+  <body>
+    <div>
+      登录的用户名: <input type="text" id="username"><button id="button">send</button>
+    </div>
+    <div id="message"></div>
+    <div id="thenews">news...</div>
+    <div>当前在线人数
+      <span id="count">0</span>
+    </div>
+    <input type="text" id="input">
+    <ol id="msg"></ol>
+    <script>
+      let chat = io.connect('http://localhost:8080/chat')
+      let news = io.connect('http://localhost:8080/news')
+      let broadcast = io.connect('http://localhost:8080')
+
+      let input = document.getElementById('input')
+      let msg = document.getElementById('msg')
+      let thenews = document.getElementById('thenews')
+      let message = document.getElementById('message')
+      let username = document.getElementById('username')
+      let button = document.getElementById('button')
+      // broadcast
+      broadcast.on('user_connected', () => {
+        message.innerHTML = 'new user'
+        setTimeout(() => {
+          message.innerHTML = ''
+        }, 2000);
+      })
+      broadcast.send('hi') // send(emit) message(listener)
+
+      // chat   usercount
+      button.addEventListener('click',() => {
+        let nameValue = username.value
+        chat.emit('user_login', {
+          name: nameValue,
+          socketId: chat.id 
+        })
+      })
+      
+
+      chat.on('usercount', (data) => {
+        document.getElementById('count').innerHTML = data.msg
+      })
+      // send message
+      input.addEventListener('change', (e) => {
+        let list = document.createElement('li')
+        list.innerHTML = 'me: ' + e.target.value
+        msg.appendChild(list)
+        chat.emit('send_msgtoserver', {msg: e.target.value})
+        e.target.value = ''
+        // chat.emit('messagetoserver', {
+        //   msg: e.target.value
+        // }, (callbackdata) => {
+        //   e.target.value = ''
+        //   list.innerHTML += ' -> ' + callbackdata
+        // })
+      })
+      // get message
+      // chat.on('messagetoclient', (data) => {
+      //   console.log(data, "___为什么这里不能答应的")
+      //   let list = document.createElement('li')
+      //   list.innerHTML = data.username + ': ' + data.msg
+      //   msg.appendChild(list)
+      //   list = null
+      // })
+
+       chat.on('send_msgto_client', (data) => {
+        let list = document.createElement('li')
+        list.innerHTML =  '全部人都知道: ' + data.msg
+        msg.appendChild(list)
+        list = null
+      })
+
+      // ...
+      news.on('news', (data) => {
+        thenews.innerHTML = data.msg
+      })
+    </script>
+  </body>
+
+  </html>

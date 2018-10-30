@@ -22,7 +22,9 @@
     "mysql": "^2.16.0",
     "mysql2": "^1.6.1",
     "sequelize": "^4.39.1",
-    "sha1": "^1.1.1"
+    "sha1": "^1.1.1",
+    "socket.io": "^2.1.1",
+    "websocket": "^1.0.28"
   },
   "devDependencies": {
     "nodemon": "^1.18.4"
