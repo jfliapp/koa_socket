@@ -9,17 +9,30 @@
     <script src="https://cdn.bootcss.com/socket.io/2.0.4/socket.io.slim.js"></script>
   </head>
 
-  <body>
+  <body id="body">
     <div>
-      登录的用户名: <input type="text" id="username"><button id="button">send</button>
+      登录的用户名: <input type="text" id="username"><button id="button1">登录</button>
     </div>
+    <div>
+        发给某个人: <input type="text" id="touser"><button id="button2">单独发</button>
+      </div>
     <div id="message"></div>
     <div id="thenews">news...</div>
     <div>当前在线人数
       <span id="count">0</span>
     </div>
-    <input type="text" id="input">
-    <ol id="msg"></ol>
+    要发送的消息：<input type="text" id="input">
+    <div style="display: flex;justify-content: space-between">
+      <div>
+        <h2>群聊天</h2>
+        <ol id="msg"></ol>
+      </div>
+      <div>
+        <h2>单独聊天</h2>
+        <ul id="only"></ul>
+      </div>
+    </div>
+
     <script>
       let chat = io.connect('http://localhost:8080/chat')
       let news = io.connect('http://localhost:8080/news')
@@ -27,46 +40,82 @@
 
       let input = document.getElementById('input')
       let msg = document.getElementById('msg')
+      let only = document.getElementById('only')
       let thenews = document.getElementById('thenews')
       let message = document.getElementById('message')
       let username = document.getElementById('username')
-      let button = document.getElementById('button')
+      let touser = document.getElementById('touser')
+      let button = document.getElementById('button1')
+      let button2 = document.getElementById('button2')
+      let body = document.getElementById('body')
       // broadcast
-      broadcast.on('user_connected', () => {
+      broadcast.on('A', (data) => {
         message.innerHTML = 'new user'
         setTimeout(() => {
-          message.innerHTML = ''
+          message.innerHTML = data
         }, 2000);
       })
       broadcast.send('hi') // send(emit) message(listener)
 
-      // chat   usercount
       button.addEventListener('click',() => {
         let nameValue = username.value
-        chat.emit('user_login', {
-          name: nameValue,
-          socketId: chat.id 
+        broadcast.emit('user_login', {
+          name: nameValue
         })
       })
       
+      setTimeout(() => {
+        let chatId = broadcast.id
+        console.log(chatId)
+        button2.addEventListener('click',() => {
+          let tonameValue = touser.value
+          let sendnameValue = username.value
+          broadcast.emit('to_user', {
+            toname: tonameValue,
+            sendname: sendnameValue,
+            id: chatId,
+            value: input.value
+          })
+          let li = document.createElement('li')
+          li.innerHTML =  sendnameValue+ ': ' + input.value
+          only.appendChild(li)
+        })
+      }, 1000);
+      
+      
+      broadcast.on('shoudao', (data) => {
+        let li = document.createElement('li')
+        li.innerHTML = `${data.name}:  ${data.mesage}`
+        only.appendChild(li)
+      })
 
+      // chat   
       chat.on('usercount', (data) => {
         document.getElementById('count').innerHTML = data.msg
       })
       // send message
-      input.addEventListener('change', (e) => {
-        let list = document.createElement('li')
-        list.innerHTML = 'me: ' + e.target.value
-        msg.appendChild(list)
-        chat.emit('send_msgtoserver', {msg: e.target.value})
-        e.target.value = ''
-        // chat.emit('messagetoserver', {
-        //   msg: e.target.value
-        // }, (callbackdata) => {
-        //   e.target.value = ''
-        //   list.innerHTML += ' -> ' + callbackdata
-        // })
+      body.addEventListener('keydown', () => {
+        if(event.keyCode == '13') {
+          let list = document.createElement('li')
+          list.innerHTML = '我: ' + input.value
+          msg.appendChild(list)
+          chat.emit('send_msgtoserver', {msg: input.value})
+        }       
       })
+      
+      // input.addEventListener('change', (e) => {
+      //   let list = document.createElement('li')
+      //   list.innerHTML = '我: ' + e.target.value
+      //   msg.appendChild(list)
+      //   chat.emit('send_msgtoserver', {msg: e.target.value})
+      //   e.target.value = ''
+      //   chat.emit('messagetoserver', {
+      //     msg: e.target.value
+      //   }, (callbackdata) => {
+      //     e.target.value = ''
+      //     list.innerHTML += ' -> ' + callbackdata
+      //   })
+      // })
       // get message
       // chat.on('messagetoclient', (data) => {
       //   console.log(data, "___为什么这里不能答应的")

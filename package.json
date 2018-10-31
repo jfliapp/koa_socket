@@ -24,6 +24,7 @@
     "sequelize": "^4.39.1",
     "sha1": "^1.1.1",
     "socket.io": "^2.1.1",
+    "underscore": "^1.9.1",
     "websocket": "^1.0.28"
   },
   "devDependencies": {

@@ -3,6 +3,7 @@ const {TOKEN_ENCODE_STR, URL_YES_PASS} = require("./config")
 // const User = require("../db").User
 
 module.exports = {
+  // 生成token 
   create_token (str) {
     return jwt.sign({str},TOKEN_ENCODE_STR, {expiresIn: '1h'});
   },
