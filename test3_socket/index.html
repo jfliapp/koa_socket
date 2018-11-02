@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html="en">
-
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,8 +13,8 @@
       登录的用户名: <input type="text" id="username"><button id="button1">登录</button>
     </div>
     <div>
-        发给某个人: <input type="text" id="touser"><button id="button2">单独发</button>
-      </div>
+      发给某个人: <input type="text" id="touser"><button id="button2">单独发</button>
+    </div>
     <div id="message"></div>
     <div id="thenews">news...</div>
     <div>当前在线人数
@@ -57,17 +56,17 @@
       })
       broadcast.send('hi') // send(emit) message(listener)
 
-      button.addEventListener('click',() => {
+      button.addEventListener('click', () => {
         let nameValue = username.value
         broadcast.emit('user_login', {
           name: nameValue
         })
       })
-      
+
       setTimeout(() => {
         let chatId = broadcast.id
         console.log(chatId)
-        button2.addEventListener('click',() => {
+        button2.addEventListener('click', () => {
           let tonameValue = touser.value
           let sendnameValue = username.value
           broadcast.emit('to_user', {
@@ -77,12 +76,11 @@
             value: input.value
           })
           let li = document.createElement('li')
-          li.innerHTML =  sendnameValue+ ': ' + input.value
+          li.innerHTML = sendnameValue + ': ' + input.value
           only.appendChild(li)
         })
       }, 1000);
-      
-      
+
       broadcast.on('shoudao', (data) => {
         let li = document.createElement('li')
         li.innerHTML = `${data.name}:  ${data.mesage}`
@@ -95,14 +93,16 @@
       })
       // send message
       body.addEventListener('keydown', () => {
-        if(event.keyCode == '13') {
+        if (event.keyCode == '13') {
           let list = document.createElement('li')
           list.innerHTML = '我: ' + input.value
           msg.appendChild(list)
-          chat.emit('send_msgtoserver', {msg: input.value})
-        }       
+          chat.emit('send_msgtoserver', {
+            msg: input.value
+          })
+        }
       })
-      
+
       // input.addEventListener('change', (e) => {
       //   let list = document.createElement('li')
       //   list.innerHTML = '我: ' + e.target.value
@@ -125,9 +125,9 @@
       //   list = null
       // })
 
-       chat.on('send_msgto_client', (data) => {
+      chat.on('send_msgto_client', (data) => {
         let list = document.createElement('li')
-        list.innerHTML =  '全部人都知道: ' + data.msg
+        list.innerHTML = '全部人都知道: ' + data.msg
         msg.appendChild(list)
         list = null
       })

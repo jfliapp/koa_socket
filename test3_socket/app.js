@@ -1,4 +1,3 @@
-
 var Koa = require('koa')
 var app = new Koa()
 var server = require('http').createServer(app.callback())
@@ -9,7 +8,7 @@ var io = require('socket.io')(server)
 io.use((socket, next) => {
   let handshake = socket.handshake.xdomain;
   console.log(handshake)
-  if(handshake) {
+  if (handshake) {
     next(new Error('Authorizetion error'))
   }
   next()
@@ -20,25 +19,24 @@ server.listen(8080, () => {
 })
 
 let usercount = 0; // 统计有多少个人连接了我的服务器
-let hasName = new Array() 
+let hasName = new Array()
 
 io.on('connection', (socket) => {
   // io.sockets.connected 连接上来id
-  if(io.sockets.connected[socket.id]) {
+  if (io.sockets.connected[socket.id]) {
     io.sockets.connected[socket.id].emit('A', '只传给A客户端的')
   }
   console.log(socket.id, "socket.id ---") // 这里是 拿到我连上来的客户端的id
   // 这个连接成功
   console.log("a client connect")
 
-  socket.on('user_login',(data) => {
+  socket.on('user_login', (data) => {
     var nameId = data.name
     hasName[nameId] = socket.id
     console.log(hasName, "hasNam++++++")
   })
 
   socket.on('to_user', (data) => {
-    console.log(data,"to_user")
     var sendname = data.sendname
     var toName = data.toname
     var toId = data.id
@@ -50,23 +48,26 @@ io.on('connection', (socket) => {
     //   var toSocket = _.findWhere(io.sockets.sockets, {id: toId})
     //   toSocket.emit('shoudao', msg)
     // }
-    
-    if(hasName[toName]) {
-      var toSocket = _.findWhere(io.sockets.sockets, {id: hasName[toName]})
-      toSocket.emit('shoudao', {mesage: msg, name: sendname})
-    }
 
-    
+    if (hasName[toName]) {
+      var toSocket = _.findWhere(io.sockets.sockets, {
+        id: hasName[toName]
+      })
+      toSocket.emit('shoudao', {
+        mesage: msg,
+        name: sendname
+      })
+    }
   })
   // 这个断掉连接
   socket.on('disconnect', () => {
-    console.log( socket.id + "断了连接")
+    console.log(socket.id + "断了连接")
   })
 
   socket.broadcast.emit('use_connected')
   // 这个只能接受 send 传上来的数据
   socket.on('message', (msg) => {
-    console.log(msg,"收到的信息")
+    console.log(msg, "收到的信息")
   })
 })
 
@@ -74,7 +75,9 @@ io.on('connection', (socket) => {
 let chat = io.of('/chat').on('connection', (socket) => {
   console.log(socket.id, "他是怎么辨别不同的人的")
   usercount++
-  chat.emit('usercount', { msg: usercount })
+  chat.emit('usercount', {
+    msg: usercount
+  })
 
   socket.on('send_msgtoserver', (data) => {
     // console.log(io.sockets.sockets, "推送上来的sockets里面有什么")
@@ -82,23 +85,30 @@ let chat = io.of('/chat').on('connection', (socket) => {
   })
 
   var data2msg;
-  socket.on('messagetoserver',(data, callback) => {
+  socket.on('messagetoserver', (data, callback) => {
     data2msg = data.msg
     callback('已收到')
   })
 
-  socket.emit('messagetoclient', {msg: data2msg, username: 'server'})
+  socket.emit('messagetoclient', {
+    msg: data2msg,
+    username: 'server'
+  })
 
   socket.on('disconnect', () => {
     usercount--
-    chat.emit('usercount',{msg: usercount})
+    chat.emit('usercount', {
+      msg: usercount
+    })
   })
 
 })
 
 let news = io.of('/news').on('connection', (socket) => {
   let newsInterval = setInterval(() => {
-    socket.emit('news', {msg: 'news from ' + Date.now() })
+    socket.emit('news', {
+      msg: 'news from ' + Date.now()
+    })
   }, 1000)
 
   socket.on('disconnect', () => {
@@ -106,4 +116,3 @@ let news = io.of('/news').on('connection', (socket) => {
   })
 
 })
-
