@@ -67,10 +67,7 @@ module.exports = {
   // 获取全部用户
   async getAllUser(ctx, next) {
     let data = await userdb.getAllKoasql()
-    ctx.response.body = {
-      code: 1,
-      msg: "ok",
-      data
-    }
+    ctx.state.code = 1
+    ctx.state.data = data
   }
 }
